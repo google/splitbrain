@@ -10,4 +10,4 @@ TODO(cambr): Implement.
 """
 
 if __name__ == '__main__':
-    raise NotImplementedError("Not yet implemented - see splitbrain.py.")
+  raise NotImplementedError("Not yet implemented - see splitbrain.py.")
