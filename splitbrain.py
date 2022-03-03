@@ -15,43 +15,21 @@ See main.py for running the algorithm against input data.
 
 import networkx as nx
 
-# A program is modelled as a graph.
-#
-# def fib(n):
-#   if n < 2:
-#     return n
-#   return fib(n-1) + fib(n-2)
-#
-# my_error = "Oh no! Over 1000."
-#
-# def do_fib(n):
-#   if n >= 1000:
-#     return my_error
-#   return fib(n)
-#
-G = nx.DiGraph()
-G.add_nodes_from(["fib", "my_error", "do_fib"])
-G.add_edge("fib", "fib")  # self loops.
-G.add_edge("do_fib", "my_error")
-G.add_edge("do_fib", "fib")
-G.remove_edges_from(nx.selfloop_edges(G))
+def compute_sub_cls(G):
+  # Next, find leaf nodes of the program symbols. Iteratively remove them
+  # from the graph until at the final state.
+  def _find_leaf_nodes(graph):
+    return [v for v, d in graph.out_degree() if d == 0]
 
-# Next, find leaf nodes of the program symbols. Iteratively remove them
-# from the graph until at the final state.
-def find_leaf_nodes(graph):
-  return [v for v, d in graph.out_degree() if d == 0]
+  CLs = []
 
-CLs = []
+  while len(G) > 0:
+    symbols = []
+    leaves = _find_leaf_nodes(G)
+    for leaf in leaves:
+      G.remove_node(leaf)
+      symbols.append(leaf)
 
-while len(G) > 0:
-  symbols = []
-  leaves = find_leaf_nodes(G)
-  for leaf in leaves:
-    G.remove_node(leaf)
-    symbols.append(leaf)
+    CLs.append(symbols)
 
-  CLs.append(symbols)
-
-# Finally, print the CLs.
-for changelist in CLs:
-  print('Changelist: ' + str(changelist))
+  return CLs
