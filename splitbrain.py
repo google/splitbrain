@@ -1,17 +1,16 @@
 """Naive implementation of the generalised (V2) SplitBrain algorithm.
 
 Computes the set of all possible commits from a symbol-graph. When squashed,
-sub-commits should be equal to the orignal commit.
+sub-commits should be equal to the original commit.
 
 V1 (internal) was based upon file-level splits, operating against Bazel's BUILD
 target graph. V2 (open-source) is a generalised graph search which iteratively
 finds and extracts leaf nodes from a graph.
 
 Vertices/edges in the V2 graph are abstract, and can represent files/imports,
-symbols/calls or targets/srcs. 
+symbols/calls or targets/srcs.
 
-Usage:
-  ./splitbrain.py --input_graph=example_graph.textproto --output_dir=out
+See main.py for running the algorithm against input data.
 """
 
 import networkx as nx
