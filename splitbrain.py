@@ -1,5 +1,8 @@
 """Naive implementation of the generalised (V2) SplitBrain algorithm.
 
+Computes the set of all possible commits from a symbol-graph. When squashed,
+sub-commits should be equal to the orignal commit.
+
 V1 (internal) was based upon file-level splits, operating against Bazel's BUILD
 target graph. V2 (open-source) is a generalised graph search which iteratively
 finds and extracts leaf nodes from a graph.
