@@ -1,4 +1,4 @@
-# Splitbrain
+# 🧠 Splitbrain
 
 Splitbrain is a research system aiming to analyze the coherence of
 large-scale software codebases.
