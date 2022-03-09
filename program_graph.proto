@@ -8,7 +8,7 @@ package splitbrain;
 // information to split the program yet. Multi-file symbols are unsupported.
 message NodeDef {
     // Unique name within the context of a single program.
-    optional string name = 1;
+    string name = 1;
 
     enum Kind {
         UNKNOWN = 0;
@@ -18,7 +18,7 @@ message NodeDef {
     }
 
     // The type of node. Is this a file or a AST symbol (e.g. function)?
-    optional Kind kind = 2;
+    Kind kind = 2;
 
     // Name of out-edge symbols. For a program to be considered valid, all
     // symbolic references must be present in the graph.
