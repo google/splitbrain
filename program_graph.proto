@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package splitbrain;
+
 // NodeDef represents a node within the program graph.
 //
 // This can be be a file, BUILD target, or AST symbol. Note there is not enough
