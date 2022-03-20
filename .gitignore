@@ -3,3 +3,4 @@
 *_pb2.py
 .vscode
 *.swp
+out/*
