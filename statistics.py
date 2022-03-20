@@ -19,4 +19,5 @@ def evaluate(G: nx.Graph,
   stats_pb.edge_connectivity  = nx.edge_connectivity(G)
   stats_pb.number_of_nodes = G.number_of_nodes()
   stats_pb.number_of_edges = G.number_of_edges()
+  stats_pb.number_of_sub_cls = len(changelists)
   return stats_pb

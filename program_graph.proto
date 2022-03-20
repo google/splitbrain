@@ -38,4 +38,7 @@ message Statistics {
     // Counts of nodes and edges present in the GraphDef.
     int32 number_of_nodes  = 3;
     int32 number_of_edges = 4;
+
+    // Count of number of sub-changelists for this overall change.
+    int32 number_of_sub_cls = 5;
 }
