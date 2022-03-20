@@ -11,6 +11,7 @@ import os
 import networkx as nx
 import program_graph_pb2
 import splitbrain
+import statistics
 
 from absl import app
 from absl import flags
@@ -20,41 +21,56 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string('input_path', None, 'Path to input GraphDef.')
 flags.mark_flag_as_required('input_path')
+flags.DEFINE_bool('enable_statistics', False,
+                  'If true, capture statistics for this session.')
+flags.DEFINE_string(
+  'output_dir', None,
+  'Directory to write output artefacts (e.g. statistics pb) to.')
 
 
 def _load_graphdef_from_file(path: str) -> program_graph_pb2.GraphDef:
-  graphdef = program_graph_pb2.GraphDef()
-  with open(path, 'r') as f:
-    text_format.Merge(f.read(), graphdef)
-  return graphdef
+    graphdef = program_graph_pb2.GraphDef()
+    with open(path, 'r') as f:
+      text_format.Merge(f.read(), graphdef)
+    return graphdef
 
 
 def _make_graph_from_proto(graphdef: program_graph_pb2.GraphDef) -> nx.Graph:
-  graph = nx.DiGraph()
-  graph.add_nodes_from([symbol.name for symbol in graphdef.symbol])
+    graph = nx.DiGraph()
+    graph.add_nodes_from([symbol.name for symbol in graphdef.symbol])
 
-  for symbol in graphdef.symbol:
-    for edge in symbol.u_edge:
-      graph.add_edge(symbol.name, edge)
+    for symbol in graphdef.symbol:
+      for edge in symbol.u_edge:
+        graph.add_edge(symbol.name, edge)
 
-  graph.remove_edges_from(nx.selfloop_edges(graph))
-  return graph 
+    graph.remove_edges_from(nx.selfloop_edges(graph))
+    return graph
 
 
 def main(argv):
-  del argv
+    del argv
 
-  if not os.path.exists(FLAGS.input_path):
-    raise flags.FlagError("input path of %s is invalid".format(FLAGS.input_path))
-  graphdef = _load_graphdef_from_file(FLAGS.input_path)
+    if not os.path.exists(FLAGS.input_path):
+      raise flags.FlagError("input path of %s is invalid".format(
+        FLAGS.input_path))
+    graphdef = _load_graphdef_from_file(FLAGS.input_path)
 
-  G = _make_graph_from_proto(graphdef)
-  print("Loaded graphdef into memory: %s".format(G))
+    G = _make_graph_from_proto(graphdef)
+    print("Loaded graphdef into memory: %s".format(G))
 
-  CLs = splitbrain.compute_sub_cls(G)
-  for changelist in CLs:
-    print('Changelist: ' + str(changelist))
+    CLs = splitbrain.compute_sub_cls(G)
+    for changelist in CLs:
+      print('Changelist: ' + str(changelist))
+
+    if FLAGS.enable_statistics:
+      if FLAGS.output_dir is None:
+        raise flags.FlagsError(
+          "output_dir cannot be empty if --enable_statistics.")
+      print('Writing statistics to disk.')
+      stats_pb = statistics.evaluate(G, CLs)
+      with open(FLAGS.output_dir, 'r') as f:
+        f.write(stats_pb)
 
 
 if __name__ == '__main__':
-  app.run(main)
+    app.run(main)
