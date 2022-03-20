@@ -8,7 +8,7 @@ In addition, the functionality here can be run as a batch-job to collect data
 over time. See the splitbrain.Statistics proto for the exact data structure.
 """
 
-from networkx import nx
+import networkx as nx
 import program_graph_pb2
 
 
