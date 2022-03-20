@@ -33,4 +33,4 @@ class SplitbrainTest(absltest.TestCase):
       print('Changelist: ' + str(changelist))
 
 if __name__ == '__main__':
-    absltest.main()
+  absltest.main()
