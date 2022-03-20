@@ -30,6 +30,16 @@ class SplitbrainAlgorithm:
     raise NotImplementedError("Algorithm not implemented.")
 
 
+class NullAlgorithm(SplitbrainAlgorithm):
+  """Null algorithm which can act as experiment control group."""
+
+  def run(self, G: nx.Graph) -> list:
+    symbols = []
+    for node in G.nodes:
+      symbols.append(node)
+    return [symbols]
+
+
 class SplitbrainV2(SplitbrainAlgorithm):
   """Naive implementation of the generalised (V2) SplitBrain algorithm."""
   
