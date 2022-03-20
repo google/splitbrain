@@ -29,3 +29,16 @@ message NodeDef {
 message GraphDef {
     repeated NodeDef symbol = 1;
 }
+
+message Statistics {
+    // Graph measures provided from nx.
+    float average_node_connectivity = 1;
+    float edge_connectivity = 2;
+
+    // Counts of nodes and edges present in the GraphDef.
+    int32 number_of_nodes  = 3;
+    int32 number_of_edges = 4;
+
+    // Count of number of sub-changelists for this overall change.
+    int32 number_of_sub_cls = 5;
+}

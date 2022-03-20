@@ -25,7 +25,8 @@ class SplitbrainTest(absltest.TestCase):
     G.add_edge("do_fib", "fib")
     G.remove_edges_from(nx.selfloop_edges(G))
 
-    CLs = splitbrain.compute_sub_cls(G)
+    algorithm = splitbrain.SplitbrainV2()
+    CLs = algorithm.run(G)
 
     self.assertEqual(CLs, [['fib', 'my_error'], ['do_fib']])
 
@@ -33,4 +34,4 @@ class SplitbrainTest(absltest.TestCase):
       print('Changelist: ' + str(changelist))
 
 if __name__ == '__main__':
-    absltest.main()
+  absltest.main()
