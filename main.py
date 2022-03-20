@@ -58,7 +58,8 @@ def main(argv):
     G = _make_graph_from_proto(graphdef)
     print("Loaded graphdef into memory: %s" % G)
 
-    CLs = splitbrain.compute_sub_cls(G)
+    algorithm = splitbrain.SplitbrainV2()
+    CLs = algorithm.run(G)
     for changelist in CLs:
       print('Changelist: ' + str(changelist))
 
