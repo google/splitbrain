@@ -176,7 +176,7 @@ Continuing with the post-merge example in the breaking change example:
 
 ![](./images/image7.png)
 
-Once the spanning tree is constructed, this represents the minimum set of changelists that are able to be split off and submitted independently! Caveats are mainly BUILD file changes, so this would need to be handled as a special case. Tools such as `buildifier` and hg fix could automagically help fix those files.
+Once the spanning tree is constructed, this represents the minimum set of changelists that are able to be split off and submitted independently! Caveats are mainly BUILD file changes, so this would need to be handled as a special case. Tools such as `buildifier` could automagically help fix those files.
 
 
 #### Step #4: Fixing BUILD files among other things
