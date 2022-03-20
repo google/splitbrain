@@ -16,6 +16,8 @@ See main.py for running the algorithm against input data.
 import networkx as nx
 
 def compute_sub_cls(G):
+  G = G.copy()
+
   # Next, find leaf nodes of the program symbols. Iteratively remove them
   # from the graph until at the final state.
   def _find_leaf_nodes(graph):

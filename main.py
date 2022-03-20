@@ -51,12 +51,12 @@ def main(argv):
     del argv
 
     if not os.path.exists(FLAGS.input_path):
-      raise flags.FlagError("input path of %s is invalid".format(
+      raise Exception("input path of %s is invalid" % (
         FLAGS.input_path))
     graphdef = _load_graphdef_from_file(FLAGS.input_path)
 
     G = _make_graph_from_proto(graphdef)
-    print("Loaded graphdef into memory: %s".format(G))
+    print("Loaded graphdef into memory: %s" % G)
 
     CLs = splitbrain.compute_sub_cls(G)
     for changelist in CLs:
@@ -64,12 +64,13 @@ def main(argv):
 
     if FLAGS.enable_statistics:
       if FLAGS.output_dir is None:
-        raise flags.FlagsError(
+        raise Exception(
           "output_dir cannot be empty if --enable_statistics.")
       print('Writing statistics to disk.')
       stats_pb = statistics.evaluate(G, CLs)
-      with open(FLAGS.output_dir, 'r') as f:
-        f.write(stats_pb)
+      output_path = os.path.join(FLAGS.output_dir, 'statistics.proto')
+      with open(output_path, 'wb') as f:
+        f.write(stats_pb.SerializeToString())
 
 
 if __name__ == '__main__':
