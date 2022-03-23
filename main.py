@@ -16,6 +16,7 @@ import statistics
 from absl import app
 from absl import flags
 from google.protobuf import text_format
+from networkx.drawing.nx_pydot import to_pydot
 
 # Map of valid algorithmic names and associated classes.
 VALID_ALGORITHMS = {
@@ -32,9 +33,16 @@ flags.DEFINE_bool('enable_statistics', False,
 flags.DEFINE_string(
   'output_dir', None,
   'Directory to write output artefacts (e.g. statistics pb) to.')
+flags.DEFINE_bool(
+  'dot', False,
+  'If true, output the changeset as a DOT visualisation to stdout.')
 flags.DEFINE_multi_enum(
   'algorithms', ['SplitbrainV2'], VALID_ALGORITHMS.keys(),
   'Multi string list of algorithms to run, e.g. SplitbrainV2.')
+
+
+def _make_dot_from_graph(G: nx.Graph) -> str:
+  return to_pydot(G).to_string()
 
 
 def _load_graphdef_from_file(path: str) -> program_graph_pb2.GraphDef:
@@ -83,6 +91,9 @@ def main(argv):
       output_path = os.path.join(FLAGS.output_dir, 'statistics.proto')
       with open(output_path, 'wb') as f:
         f.write(stats_pb.SerializeToString())
+
+    if FLAGS.dot:
+      print(_make_dot_from_graph(G))
 
 
 if __name__ == '__main__':
