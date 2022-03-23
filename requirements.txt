@@ -2,3 +2,4 @@ networkx
 absl-py
 protobuf
 google-benchmark
+pydot
