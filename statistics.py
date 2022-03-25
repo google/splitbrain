@@ -14,6 +14,8 @@ import program_graph_pb2
 
 def evaluate(G: nx.Graph,
              changelists: list) -> program_graph_pb2.Statistics:
+  # TODO(cameron): Pass in GraphDef, use to compute CL-level stats.
+  # TODO(cameron): Compute diff stats *between* CLs also. Add tests for this.
   stats_pb = program_graph_pb2.Statistics()
   stats_pb.average_node_connectivity = nx.average_node_connectivity(G)
   stats_pb.edge_connectivity  = nx.edge_connectivity(G)

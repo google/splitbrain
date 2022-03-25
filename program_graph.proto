@@ -85,7 +85,7 @@ message Statistics {
       // Number of nodes (symbols) present in this CL.
       int32 number_of_nodes = 3;
 
-      // Numbrr of edges (calls, deps, etc...) present in this CL.
+      // Number of edges (calls, deps, etc...) present in this CL.
       int32 number_of_edges = 4;
 
       // Number of lines added for this CL.
