@@ -12,7 +12,7 @@ import networkx as nx
 import program_graph_pb2
 
 ALGORITHM_TO_ENUM_MAP = {
-    'SpltbrainV2': program_graph_pb2.Statistics.Algorithm.SPLITBRAIN_V2,
+    'SplitbrainV2': program_graph_pb2.Statistics.Algorithm.SPLITBRAIN_V2,
     'Control': program_graph_pb2.Statistics.Algorithm.CONTROL,
 }
 
@@ -66,9 +66,11 @@ def evaluate_cl(G: nx.Graph,
   return cl_stats_pb
 
 
-def evaluate(G: nx.Graph, changelists: list,
+def evaluate(G: nx.Graph,
+             changelists: list,
              graphdef: program_graph_pb2.GraphDef,
-             algorithm: str) -> program_graph_pb2.Statistics:
+             algorithm: str,
+             cl_identifier="unknown") -> program_graph_pb2.Statistics:
   """Processes all CLs and symbolic table to produce statistics.
 
   Args:
@@ -76,6 +78,7 @@ def evaluate(G: nx.Graph, changelists: list,
     changelists: List of strings with a direct mapping to NodeDefs.
     graphdef: Protobuf representation of the original CL.
     algorithm: Name of the algorithm used, e.g. "SplitbrainV2".
+    cl_identifier: Optional. Name of CL as unique ID.
 
   Returns:
     Statistics protobuf suitable for further analysis.
@@ -88,6 +91,7 @@ def evaluate(G: nx.Graph, changelists: list,
   stats_pb.algorithm = ALGORITHM_TO_ENUM_MAP.get(
       algorithm, program_graph_pb2.Statistics.Algorithm.UNKNOWN)
   stats_pb.original_changelist.CopyFrom(evaluate_cl(G, symbol_table))
+  stats_pb.cl_identifier = cl_identifier
 
   for CL in changelists:
     cl_stats_pb = evaluate_cl(G.subgraph(CL), symbol_table)
