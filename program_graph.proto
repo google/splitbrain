@@ -32,6 +32,13 @@ message NodeDef {
 
     // Number of lines removed for this symbol.
     int32 lines_removed = 6;
+    
+    // The language this symbol is written in.
+    //
+    // For edge cases such as SWIG definitions or mixed C/C++ code, we simply
+    // ignore that and take the majority language.
+    // This can either be populated by Kythe or extracted from file extension.
+    string language = 7;
 }
 
 // GraphDef represents a high-level program graph.
@@ -89,6 +96,12 @@ message Statistics {
 
       // Number of lines removed for this CL.
       int32 lines_removed = 7;
+
+      // The *dominant* language present in this CL.
+      //
+      // This is computed using a utility class based on symbol diff sizes,
+      // and file extensions.
+      string language = 8;
     }
 
     // Statistics for the original changelist.
