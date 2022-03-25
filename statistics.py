@@ -17,11 +17,25 @@ ALGORITHM_TO_ENUM_MAP = {
 }
 
 
-def compute_delta():
-  pass
+def evaluate_cl(G: nx.Graph,
+                symbol_table: dict) -> program_graph_pb2.Statistics.CL:
+  """Processes CL graph and symbolic table to produce statistics.
 
+  The goal here is simply to capture the relevant statistics, not make a
+  judgement on the quality of the CL.
 
-def evaluate_cl(G: nx.Graph, symbol_table: dict) -> program_graph_pb2.Statistics.CL:
+  The following metrics are captured:
+  - Primary language (selects for majority of diff).
+  - Graph complexity metrics (edge and node connectivity).
+  - Diff metrics (total delta, add, rm).
+
+  Args:
+    G: GraphDef structure representing the CL.
+    symbol_table: Dictionary structure from symbol name to NodeDef protobuf.
+
+  Returns:
+    Statistics protobuf suitable for further analysis.
+  """
   cl_stats_pb = program_graph_pb2.Statistics.CL()
   cl_stats_pb.average_node_connectivity = nx.average_node_connectivity(G)
 
@@ -31,17 +45,41 @@ def evaluate_cl(G: nx.Graph, symbol_table: dict) -> program_graph_pb2.Statistics
   cl_stats_pb.number_of_nodes = G.number_of_nodes()
   cl_stats_pb.number_of_edges = G.number_of_edges()
 
+  max_delta = 0
+  primary_language = None
+
   for node in G.nodes:
-    cl_stats_pb.lines_added += symbol_table[node].lines_added
-    cl_stats_pb.lines_changed += symbol_table[node].lines_changed
-    cl_stats_pb.lines_removed += symbol_table[node].lines_removed
-  
+    symbol = symbol_table[node]
+
+    cl_stats_pb.lines_added += symbol.lines_added
+    cl_stats_pb.lines_changed += symbol.lines_changed
+    cl_stats_pb.lines_removed += symbol.lines_removed
+
+    delta = symbol.lines_added + symbol.lines_changed + symbol.lines_removed
+    if delta > max_delta:
+      max_delta = delta
+      primary_language = symbol.language
+
+  # The primary language in this CL is the one with the maximum diff delta.
+  cl_stats_pb.language = primary_language
+
   return cl_stats_pb
 
 
 def evaluate(G: nx.Graph, changelists: list,
              graphdef: program_graph_pb2.GraphDef,
              algorithm: str) -> program_graph_pb2.Statistics:
+  """Processes all CLs and symbolic table to produce statistics.
+
+  Args:
+    G: Graph representation the original CL.
+    changelists: List of strings with a direct mapping to NodeDefs.
+    graphdef: Protobuf representation of the original CL.
+    algorithm: Name of the algorithm used, e.g. "SplitbrainV2".
+
+  Returns:
+    Statistics protobuf suitable for further analysis.
+  """
   symbol_table = {}
   for symbol in graphdef.symbol:
     symbol_table[symbol.name] = symbol
