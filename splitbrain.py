@@ -21,7 +21,7 @@ class SplitbrainAlgorithm:
 
   def _find_leaf_nodes(self, graph):
     """Next, find leaf nodes of the program symbols.
-    
+
     Iteratively remove them from the graph until at the final state.
     """
     return [v for v, d in graph.out_degree() if d == 0]
@@ -42,7 +42,7 @@ class NullAlgorithm(SplitbrainAlgorithm):
 
 class SplitbrainV2(SplitbrainAlgorithm):
   """Naive implementation of the generalised (V2) SplitBrain algorithm."""
-  
+
   def run(self, G: nx.Graph) -> list:
     G = G.copy()
     CLs = []

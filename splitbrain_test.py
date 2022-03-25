@@ -2,7 +2,9 @@ import networkx as nx
 from absl.testing import absltest
 import splitbrain
 
+
 class SplitbrainTest(absltest.TestCase):
+
   def test_fib(self):
     # A program is modelled as a graph.
     #
@@ -32,6 +34,7 @@ class SplitbrainTest(absltest.TestCase):
 
     for changelist in CLs:
       print('Changelist: ' + str(changelist))
+
 
 if __name__ == '__main__':
   absltest.main()
