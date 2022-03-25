@@ -13,36 +13,46 @@ import program_graph_pb2
 
 ALGORITHM_TO_ENUM_MAP = {
     'SpltbrainV2': program_graph_pb2.Statistics.Algorithm.SPLITBRAIN_V2,
-    'Control': program_graph_pb2.Statistics.Algorithm.Control,
+    'Control': program_graph_pb2.Statistics.Algorithm.CONTROL,
 }
 
 
-def evaluate_cl(
-    G: nx.Graph, symbols: list, all_symbols: list,
-    graphdef: program_graph_pb2.GraphDef) -> program_graph_pb2.Statistics.CL:
-  stats_pb.average_node_connectivity = nx.average_node_connectivity(G)
-  stats_pb.edge_connectivity = nx.edge_connectivity(G)
-  stats_pb.number_of_nodes = G.number_of_nodes()
-  stats_pb.number_of_edges = G.number_of_edges()
-  stats_pb.number_of_sub_cls = len(changelists)
-  return None
+def compute_delta():
+  pass
+
+
+def evaluate_cl(G: nx.Graph, symbol_table: dict) -> program_graph_pb2.Statistics.CL:
+  cl_stats_pb = program_graph_pb2.Statistics.CL()
+  cl_stats_pb.average_node_connectivity = nx.average_node_connectivity(G)
+
+  if G.number_of_nodes() > 1:
+    cl_stats_pb.edge_connectivity = nx.edge_connectivity(G)
+
+  cl_stats_pb.number_of_nodes = G.number_of_nodes()
+  cl_stats_pb.number_of_edges = G.number_of_edges()
+
+  for node in G.nodes:
+    cl_stats_pb.lines_added += symbol_table[node].lines_added
+    cl_stats_pb.lines_changed += symbol_table[node].lines_changed
+    cl_stats_pb.lines_removed += symbol_table[node].lines_removed
+  
+  return cl_stats_pb
 
 
 def evaluate(G: nx.Graph, changelists: list,
              graphdef: program_graph_pb2.GraphDef,
              algorithm: str) -> program_graph_pb2.Statistics:
-  # TODO(cameron): Pass in GraphDef, use to compute CL-level stats.
-  # TODO(cameron): Compute diff stats *between* CLs also. Add tests for this.
+  symbol_table = {}
+  for symbol in graphdef.symbol:
+    symbol_table[symbol.name] = symbol
+
   stats_pb = program_graph_pb2.Statistics()
   stats_pb.algorithm = ALGORITHM_TO_ENUM_MAP.get(
       algorithm, program_graph_pb2.Statistics.Algorithm.UNKNOWN)
+  stats_pb.original_changelist.CopyFrom(evaluate_cl(G, symbol_table))
 
-  symbols = [symbol for symbols in changelists]
-
-  for CL_symbols in changelists:
-    stats_pb.split_changelist.append(
-        evaluate_cl(G.subgraph(CL_symbols), CL_symbols, symbols.graphdef))
-
-  stats_pb.original_changelist = evaluate_cl(G, symbols, symbols, graphdef)
+  for CL in changelists:
+    cl_stats_pb = evaluate_cl(G.subgraph(CL), symbol_table)
+    stats_pb.split_changelist.append(cl_stats_pb)
 
   return stats_pb

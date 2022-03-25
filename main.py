@@ -29,6 +29,8 @@ flags.DEFINE_string('input_path', None, 'Path to input GraphDef.')
 flags.mark_flag_as_required('input_path')
 flags.DEFINE_bool('enable_statistics', False,
                   'If true, capture statistics for this session.')
+flags.DEFINE_bool('textproto', False,
+                  'If true, writes output statistics as textproto format.')
 flags.DEFINE_string(
     'output_dir', None,
     'Directory to write output artefacts (e.g. statistics pb) to.')
@@ -40,8 +42,24 @@ flags.DEFINE_multi_enum(
 def _load_graphdef_from_file(path: str) -> program_graph_pb2.GraphDef:
   graphdef = program_graph_pb2.GraphDef()
   with open(path, 'r') as f:
-    text_format.Merge(f.read(), graphdef)
+    text_format.Parse(f.read(), graphdef)
   return graphdef
+
+
+def _write_statistics_to_disk(output_dir: str,
+                              stats_pb: program_graph_pb2.Statistics,
+                              algorithm="splitbrain",
+                              textproto=False):
+  if textproto:
+    file_extension = 'textproto'
+    out = text_format.MessageToBytes(stats_pb)
+  else:
+    file_extension = 'binarypb'
+    out = stats_pb.SerializeToString()
+  filename = f'{algorithm}_statistics.{file_extension}'
+  output_path = os.path.join(output_dir, filename)
+  with open(output_path, 'wb') as f:
+    f.write(out)
 
 
 def _make_graph_from_proto(graphdef: program_graph_pb2.GraphDef) -> nx.Graph:
@@ -78,10 +96,11 @@ def main(argv):
       if FLAGS.output_dir is None:
         raise Exception("output_dir cannot be empty if --enable_statistics.")
       print('Writing statistics to disk.')
-      stats_pb = statistics.evaluate(G, CLs)
-      output_path = os.path.join(FLAGS.output_dir, 'statistics.proto')
-      with open(output_path, 'wb') as f:
-        f.write(stats_pb.SerializeToString())
+      stats_pb = statistics.evaluate(G, CLs, graphdef, algorithm_name)
+      _write_statistics_to_disk(FLAGS.output_dir,
+                                stats_pb,
+                                algorithm=algorithm_name,
+                                textproto=FLAGS.textproto)
 
 
 if __name__ == '__main__':

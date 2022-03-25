@@ -28,7 +28,7 @@ message NodeDef {
   int32 lines_added = 4;
 
   // Number of lines changed for this symbol.
-  int32 lined_changed = 5;
+  int32 lines_changed = 5;
 
   // Number of lines removed for this symbol.
   int32 lines_removed = 6;
@@ -92,7 +92,7 @@ message Statistics {
     int32 lines_added = 5;
 
     // Number of lines changed for this CL.
-    int32 lined_changed = 6;
+    int32 lines_changed = 6;
 
     // Number of lines removed for this CL.
     int32 lines_removed = 7;
