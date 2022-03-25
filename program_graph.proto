@@ -23,6 +23,15 @@ message NodeDef {
     // Name of out-edge symbols. For a program to be considered valid, all
     // symbolic references must be present in the graph.
     repeated string u_edge = 3;
+
+    // Number of lines added for this symbol.
+    int32 lines_added = 4;
+
+    // Number of lines changed for this symbol.
+    int32 lined_changed = 5;
+
+    // Number of lines removed for this symbol.
+    int32 lines_removed = 6;
 }
 
 // GraphDef represents a high-level program graph.
@@ -43,20 +52,48 @@ message GraphDef {
 // - diff metrics (total delta, add, rm)
 // - graph complexity metrics
 message Statistics {
-    // Type of algorithm used for inference.
+    reserved 1, 2, 3, 4, 5;
+
+    // Unique identifier for this CL. Arbitrary.
+    string cl_identifier = 6;
+
+    // Types of algorithm in SplitBrain.
     enum Algorithm {
       UNKNOWN = 0,
       SPLITBRAIN_V2 = 1,
       CONTROL = 2,
     }
-    Algorithm algorithm = 6;
 
-    // Graph measures provided from nx.
-    float average_node_connectivity = 1;
-    float edge_connectivity = 2;
-    int32 number_of_nodes = 3;
-    int32 number_of_edges = 4;
+    // Type of algorithm used for inference.
+    Algorithm algorithm = 7;
 
-    // Count of number of sub-changelists for this overall change.
-    int32 number_of_sub_cls = 5;
+    // CL represents statistics for a sub-changelist created.
+    message CL {
+      // Average connectivity of the weighted nodes in the CL.
+      float average_node_connectivity = 1;
+
+      // Connectivity of the weighted edges in the CL.
+      float edge_connectivity = 2;
+
+      // Number of nodes (symbols) present in this CL.
+      int32 number_of_nodes = 3;
+
+      // Numbrr of edges (calls, deps, etc...) present in this CL.
+      int32 number_of_edges = 4;
+
+      // Number of lines added for this CL.
+      int32 lines_added = 5;
+
+      // Number of lines changed for this CL.
+      int32 lined_changed = 6;
+
+      // Number of lines removed for this CL.
+      int32 lines_removed = 7;
+    }
+
+    // Statistics for the original changelist.
+    CL original_changelist = 8;
+
+    // Statistics for each individually split-off changelist.
+    repeated CL split_changelist = 9;
 }
