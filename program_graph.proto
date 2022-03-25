@@ -27,16 +27,34 @@ message NodeDef {
 
 // GraphDef represents a high-level program graph.
 message GraphDef {
+    // Symbols present in the source graph.
     repeated NodeDef symbol = 1;
 }
 
+// Statistics stores the output for a single run of the SplitBrain algo.
+//
+// These are used to populate a dashboard for further analysis of performance,
+// with the following requirements:
+//
+// - algorithm name
+// - histogram of total code delta
+// - histogram of total split count
+// - slice by majority programming language
+// - diff metrics (total delta, add, rm)
+// - graph complexity metrics
 message Statistics {
+    // Type of algorithm used for inference.
+    enum Algorithm {
+      UNKNOWN = 0,
+      SPLITBRAIN_V2 = 1,
+      CONTROL = 2,
+    }
+    Algorithm algorithm = 6;
+
     // Graph measures provided from nx.
     float average_node_connectivity = 1;
     float edge_connectivity = 2;
-
-    // Counts of nodes and edges present in the GraphDef.
-    int32 number_of_nodes  = 3;
+    int32 number_of_nodes = 3;
     int32 number_of_edges = 4;
 
     // Count of number of sub-changelists for this overall change.
