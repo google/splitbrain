@@ -4,3 +4,4 @@
 .vscode
 *.swp
 out/*
+bazel-*

@@ -1,18 +1,17 @@
 # google/splitbrain
 
-proto_library(
-  name = "program_graph_proto",
-  srcs = ["program_graph.proto"],
-)
+load("@com_google_protobuf//:protobuf.bzl", "py_proto_library")
 
 py_proto_library(
   name = "program_graph_py_proto",
-  api_version = 2,
-  deps = ["program_graph_proto"],
+  srcs = ["program_graph.proto"],
+  srcs_version = "PY2AND3",
+  deps = [
+  ],
 )
 
 py_library(
-  name = "lib",
+  name = "splitbrain",
   srcs = [
     "splitbrain.py",
     "statistics.py",
@@ -21,19 +20,25 @@ py_library(
 )
 
 py_binary(
-  name = "cli",
+  name = "main",
   srcs = ["main.py"],
-  deps = [":lib"],
+  deps = [":splitbrain"],
 )
 
 py_test(
-  name = "benchmark",
+  name = "splitbrain_benchmark",
   srcs = ["splitbrain_benchmark.py"],
-  deps = [":lib"],
+  deps = [":splitbrain"],
+)
+
+filegroup(
+    name = "testdata",
+    srcs = glob(["testdata/*.textproto"])
 )
 
 py_test(
-  name = "lib_test",
+  name = "splitbrain_test",
   srcs = ["splitbrain_test.py"],
-  deps = [":lib"],
+  deps = [":splitbrain"],
+  data = [":testdata"]
 )
