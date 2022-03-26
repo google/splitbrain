@@ -1,9 +1,9 @@
 from re import X
-import networkx as nx
 from absl.testing import absltest
 import splitbrain
 import statistics
 import graphdef_utils
+import program_graph_pb2
 
 
 class SplitbrainTest(absltest.TestCase):
@@ -41,6 +41,18 @@ class SplitbrainTest(absltest.TestCase):
     self.assertSummaryASumsAcrossB(stats_pb.split_changelist,
                                    stats_pb.original_changelist,
                                    "number_of_nodes")
+
+  def test_SplitbrainV1_only_uses_bazel(self):
+    """Tests that SplitbrainV1 fails when faced with non-Bazel data.
+    
+    This is because the algorithm has a special edge-case and can only function
+    upon Bazel data.
+    """
+    nodedef = program_graph_pb2.NodeDef()
+    nodedef.kind = program_graph_pb2.NodeDef.Kind.SYMBOL
+    graphdef = program_graph_pb2.GraphDef()
+    graphdef.symbol.append(nodedef)
+    self.assertFalse(splitbrain.SplitbrainV1().is_valid(graphdef))
 
 
 if __name__ == '__main__':
