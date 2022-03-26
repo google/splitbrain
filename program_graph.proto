@@ -69,6 +69,10 @@ message Statistics {
     UNKNOWN = 0;
     SPLITBRAIN_V2 = 1;
     CONTROL = 2;
+
+    // A legacy backport from the original experiment. This only runs over the
+    // Bazel graph, not Kythe.
+    SPLITBRAIN_V1 = 3;
   }
 
   // Type of algorithm used for inference.

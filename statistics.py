@@ -12,6 +12,7 @@ import networkx as nx
 import program_graph_pb2
 
 ALGORITHM_TO_ENUM_MAP = {
+    'SplitbrainV1': program_graph_pb2.Statistics.Algorithm.SPLITBRAIN_V1,
     'SplitbrainV2': program_graph_pb2.Statistics.Algorithm.SPLITBRAIN_V2,
     'Control': program_graph_pb2.Statistics.Algorithm.CONTROL,
 }
