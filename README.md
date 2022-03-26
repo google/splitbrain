@@ -33,7 +33,7 @@ These changes can be reviewed and potentially submitted in parallel.
 
 The original design doc is bundled with the source code. See [`docs/DESIGN.md`](docs/DESIGN.md) for details.
 
-## Building
+## Build & Test
 
 Splitbrain uses [bazel](http://bazel.build) as it's build system.
 
