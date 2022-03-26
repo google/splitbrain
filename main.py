@@ -8,6 +8,7 @@ Usage:
 """
 
 import os
+import networkx as nx
 import program_graph_pb2
 import splitbrain
 import statistics
