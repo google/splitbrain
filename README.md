@@ -1,7 +1,7 @@
-# 🧠 Splitbrain
+# Splitbrain
 
-Splitbrain is a research system aiming to analyze the coherence of
-large-scale software codebases.
+Splitbrain is a research system aiming to compute disjoint changelists
+from a single code diff.
 
 ## Contributing
 
