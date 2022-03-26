@@ -16,7 +16,7 @@ class SplitbrainTest(absltest.TestCase):
 
   def test_fib(self):
     graphdef = graphdef_utils.load_graphdef_from_file(
-        "data/example_graph.textproto")
+        "testdata/example_graph.textproto")
     G = graphdef_utils.make_graph_from_proto(graphdef)
     algorithm = splitbrain.SplitbrainV2()
     CLs = algorithm.run(G)
