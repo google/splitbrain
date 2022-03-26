@@ -1,14 +1,16 @@
-# Splitbrain: Automatic CL Splitting
+# Splitbrain: Automatic PR Splitting
 
 Splitbrain is a research system aiming to compute disjoint changelists
 from a single code diff, and apply them to a user's workspace.
 
-The motivation of this work follows from the intuition that smaller CLs have a
-few benefits:
+The motivation of this work follows from the intuition that
+[smaller CLs have many benefits](https://google.github.io/eng-practices/review/developer/small-cls.html):
 
 * Faster turnaround time in code reviews
 * Smaller, atomic units of code committed in each CL
-* Easier rollback
+* Easier to rollback
+* Less blocking on any particular code review
+* and [more...](https://google.github.io/eng-practices/review/developer/small-cls.html)
 
 This repository contains a series of tools and experiments designed to further
 understand this relationship, however it is _not a usable tool_ and is
