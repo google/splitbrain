@@ -20,7 +20,8 @@ exclusively an algorithmic research system.
 
 At a high level, Splitbrain interprets a subset of the
 [Bazel](http://bazel.build) and [Kythe](http://kythe.io) graphs relevant to a
-single CL, and builds a linear chain of CLs based on the original CL.
+single CL, and builds a linear chain of CLs based on structure of the original
+CL.
 
 <p align="center">
     <img src="./docs/images/image1.png">
