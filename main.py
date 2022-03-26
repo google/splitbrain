@@ -8,10 +8,10 @@ Usage:
 """
 
 import os
-import networkx as nx
 import program_graph_pb2
 import splitbrain
 import statistics
+import graphdef_utils
 
 from absl import app
 from absl import flags
@@ -34,16 +34,12 @@ flags.DEFINE_bool('textproto', False,
 flags.DEFINE_string(
     'output_dir', None,
     'Directory to write output artefacts (e.g. statistics pb) to.')
+flags.DEFINE_string(
+    'cl_identifier', 'unknown',
+    'Unique identifier for the source changelist in statistics.')
 flags.DEFINE_multi_enum(
     'algorithms', ['SplitbrainV2'], VALID_ALGORITHMS.keys(),
     'Multi string list of algorithms to run, e.g. SplitbrainV2.')
-
-
-def _load_graphdef_from_file(path: str) -> program_graph_pb2.GraphDef:
-  graphdef = program_graph_pb2.GraphDef()
-  with open(path, 'r') as f:
-    text_format.Parse(f.read(), graphdef)
-  return graphdef
 
 
 def _write_statistics_to_disk(output_dir: str,
@@ -62,26 +58,14 @@ def _write_statistics_to_disk(output_dir: str,
     f.write(out)
 
 
-def _make_graph_from_proto(graphdef: program_graph_pb2.GraphDef) -> nx.Graph:
-  graph = nx.DiGraph()
-  graph.add_nodes_from([symbol.name for symbol in graphdef.symbol])
-
-  for symbol in graphdef.symbol:
-    for edge in symbol.u_edge:
-      graph.add_edge(symbol.name, edge)
-
-  graph.remove_edges_from(nx.selfloop_edges(graph))
-  return graph
-
-
 def main(argv):
   del argv
 
   if not os.path.exists(FLAGS.input_path):
     raise Exception("input path of %s is invalid" % (FLAGS.input_path))
-  graphdef = _load_graphdef_from_file(FLAGS.input_path)
+  graphdef = graphdef_utils.load_graphdef_from_file(FLAGS.input_path)
 
-  G = _make_graph_from_proto(graphdef)
+  G = graphdef_utils.make_graph_from_proto(graphdef)
   print("Loaded graphdef into memory: %s" % G)
 
   for algorithm_name in FLAGS.algorithms:
@@ -96,7 +80,8 @@ def main(argv):
       if FLAGS.output_dir is None:
         raise Exception("output_dir cannot be empty if --enable_statistics.")
       print('Writing statistics to disk.')
-      stats_pb = statistics.evaluate(G, CLs, graphdef, algorithm_name)
+      stats_pb = statistics.evaluate(G, CLs, graphdef, algorithm=algorithm_name,
+                                     cl_identifier=FLAGS.cl_identifier)
       _write_statistics_to_disk(FLAGS.output_dir,
                                 stats_pb,
                                 algorithm=algorithm_name,

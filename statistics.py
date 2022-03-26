@@ -69,7 +69,7 @@ def evaluate_cl(G: nx.Graph,
 def evaluate(G: nx.Graph,
              changelists: list,
              graphdef: program_graph_pb2.GraphDef,
-             algorithm: str,
+             algorithm="unknown",
              cl_identifier="unknown") -> program_graph_pb2.Statistics:
   """Processes all CLs and symbolic table to produce statistics.
 
@@ -77,7 +77,7 @@ def evaluate(G: nx.Graph,
     G: Graph representation the original CL.
     changelists: List of strings with a direct mapping to NodeDefs.
     graphdef: Protobuf representation of the original CL.
-    algorithm: Name of the algorithm used, e.g. "SplitbrainV2".
+    algorithm: Optional. Name of algorithm used, e.g. "SplitbrainV2".
     cl_identifier: Optional. Name of CL as unique ID.
 
   Returns:
