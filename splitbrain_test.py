@@ -1,37 +1,47 @@
+from re import X
 import networkx as nx
 from absl.testing import absltest
 import splitbrain
+import statistics
+import graphdef_utils
+
 
 class SplitbrainTest(absltest.TestCase):
-  def test_fib(self):
-    # A program is modelled as a graph.
-    #
-    # def fib(n):
-    #   if n < 2:
-    #     return n
-    #   return fib(n-1) + fib(n-2)
-    #
-    # my_error = "Oh no! Over 1000."
-    #
-    # def do_fib(n):
-    #   if n >= 1000:
-    #     return my_error
-    #   return fib(n)
-    #
-    G = nx.DiGraph()
-    G.add_nodes_from(["fib", "my_error", "do_fib"])
-    G.add_edge("fib", "fib")  # self loops.
-    G.add_edge("do_fib", "my_error")
-    G.add_edge("do_fib", "fib")
-    G.remove_edges_from(nx.selfloop_edges(G))
 
+  def assertSummaryASumsAcrossB(self, A, B, name):
+    x = 0
+    for CL in A:
+      x += getattr(CL, name)
+    self.assertEqual(getattr(B, name), x)
+
+  def test_fib(self):
+    graphdef = graphdef_utils.load_graphdef_from_file(
+        "testdata/example_graph.textproto")
+    G = graphdef_utils.make_graph_from_proto(graphdef)
     algorithm = splitbrain.SplitbrainV2()
     CLs = algorithm.run(G)
-
     self.assertEqual(CLs, [['fib', 'my_error'], ['do_fib']])
 
-    for changelist in CLs:
-      print('Changelist: ' + str(changelist))
+    stats_pb = statistics.evaluate(G, CLs, graphdef)
+    self.assertLen(stats_pb.split_changelist, len(CLs))
+
+    # This is a little confusing, but the goal is to confirm that the number
+    # of nodes, lines changed, etc... is equal between the source program graph
+    # and the individual summary records.
+    for prop in [
+        "lines_added",
+        "lines_changed",
+        "lines_removed",
+    ]:
+      self.assertSummaryASumsAcrossB(stats_pb.split_changelist,
+                                     stats_pb.original_changelist, prop)
+      self.assertSummaryASumsAcrossB(graphdef.symbol,
+                                     stats_pb.original_changelist, prop)
+
+    self.assertSummaryASumsAcrossB(stats_pb.split_changelist,
+                                   stats_pb.original_changelist,
+                                   "number_of_nodes")
+
 
 if __name__ == '__main__':
   absltest.main()

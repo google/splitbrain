@@ -19,11 +19,17 @@ symbol: {
     name: "fib"
     kind: SYMBOL
     u_edge: "fib"
+    language: "py"
+    lines_added: 4
+    lines_changed: 0
+    lines_removed: 0
 }
 
 symbol: {
     name: "my_error"
     kind: SYMBOL
+    language: "py"
+    lines_added: 1
 }
 
 symbol: {
@@ -31,4 +37,6 @@ symbol: {
     kind: SYMBOL
     u_edge: "my_error" 
     u_edge: "fib" 
+    language: "py"
+    lines_added: 4
 }
