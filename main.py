@@ -23,6 +23,7 @@ from networkx.drawing.nx_pydot import to_pydot
 VALID_ALGORITHMS = {
     'Control': splitbrain.NullAlgorithm,
     'SplitbrainV2': splitbrain.SplitbrainV2,
+    'SplitbrainV1': splitbrain.SplitbrainV1,
 }
 
 FLAGS = flags.FLAGS
@@ -80,6 +81,9 @@ def main(argv):
   for algorithm_name in FLAGS.algorithms:
     print("\nRunning algorithm: %s" % algorithm_name)
     algorithm = VALID_ALGORITHMS[algorithm_name]()
+
+    if not algorithm.is_valid(graphdef):
+      continue
 
     CLs = algorithm.run(G)
     for changelist in CLs:
