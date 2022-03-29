@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: Splitbrain
+message: 'To cite splitbrain in publications use:'
+type: software
+authors:
+  - given-names: Cameron
+    family-names: Brown
+    email: cambr@google.com
+    website: http://cameronbrown.co.uk
+url: https://github.com/google/splitbrain
+abstract: A research system to automate splitting PRs into smaller PRs.
+keywords:
+  - changelist
+  - abstract syntax tree
+  - bazel
+  - kythe
+  - programming languages
+license: MIT
