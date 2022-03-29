@@ -20,13 +20,6 @@ import program_graph_pb2
 class SplitbrainAlgorithm:
   """Base implementation of the SplitBrain algorithm."""
 
-  def _find_leaf_nodes(self, graph):
-    """Next, find leaf nodes of the program symbols.
-
-    Iteratively remove them from the graph until at the final state.
-    """
-    return [v for v, d in graph.out_degree() if d == 0]
-
   def is_valid(self, graphdef: program_graph_pb2.GraphDef) -> bool:
     """Returns if the algorithm can run over the given graphdef."""
     return True
@@ -52,6 +45,9 @@ class SplitbrainV1(SplitbrainAlgorithm):
   symbolic data is fed.
   """
 
+  def _find_leaf_nodes(self, graph):
+    return [v for v, d in graph.out_degree() if d == 0]
+
   def is_valid(self, graphdef: program_graph_pb2.GraphDef) -> bool:
     for symbol in graphdef.symbol:
       if symbol.kind != program_graph_pb2.NodeDef.Kind.BUILD_TARGET:
@@ -74,18 +70,15 @@ class SplitbrainV1(SplitbrainAlgorithm):
 
 class SplitbrainV2(SplitbrainAlgorithm):
   """Naive implementation of the generalised (V2) SplitBrain algorithm.
+
+  Throws:
+    NetworkXError or NetworkXUnfeasible if the graph is undirected or is not a
+    complete directed acyclic graph.
   
   TODO(cameron): Add clustering.
   """
 
   def run(self, G: nx.Graph) -> list:
-    G = G.copy()
-    CLs = []
-    while len(G) > 0:
-      symbols = []
-      leaves = self._find_leaf_nodes(G)
-      for leaf in leaves:
-        G.remove_node(leaf)
-        symbols.append(leaf)
-      CLs.append(symbols)
+    assert nx.is_directed_acyclic_graph(G)
+    CLs = list(reversed(list(nx.topological_sort(G))))
     return CLs
