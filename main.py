@@ -41,8 +41,10 @@ flags.DEFINE_string(
     'cl_identifier', 'unknown',
     'Unique identifier for the source changelist in statistics.')
 flags.DEFINE_bool(
-  'dot', False,
-  'If true, output the changeset as a DOT visualisation to stdout.')
+    'dot', False,
+    'If true, output the changeset as a DOT visualisation to stdout.')
+flags.DEFINE_bool('git', False,
+                  'If true, output the changeset as a stream of git commands.')
 flags.DEFINE_multi_enum(
     'algorithms', ['SplitbrainV2'], VALID_ALGORITHMS.keys(),
     'Multi string list of algorithms to run, e.g. SplitbrainV2.')
@@ -66,6 +68,25 @@ def _write_statistics_to_disk(output_dir: str,
 
 def _make_dot_from_graph(G: nx.Graph) -> str:
   return to_pydot(G).to_string()
+
+
+def _make_git_from_cls(CLs: list, graphdef: program_graph_pb2.GraphDef) -> str:
+  # TODO(cameron): Ensure cannot build if doesn't fit constraints.
+  # TODO(cameron): Move to another file, add tests.
+
+  out = "git rebase -i <oldsha1>\n" # TODO(cameron): Pass in via CLI.
+  out += "git reset HEAD^\n"
+  for CL in CLs:
+    for symbol in CL:
+      del symbol
+      filepath = "path/to/file" # TODO(cameron): Grab from symbol table.
+      out += f"git add {filepath}\n"
+    commit_message = "SplitBrain Commit!!!" # TODO(cameron): Generate description.
+    out += f"git commit -m {commit_message}\n"
+
+  out += "git rebase --continue"
+  return out
+  
 
 
 def main(argv):
@@ -93,7 +114,10 @@ def main(argv):
       if FLAGS.output_dir is None:
         raise Exception("output_dir cannot be empty if --enable_statistics.")
       print('Writing statistics to disk.')
-      stats_pb = statistics.evaluate(G, CLs, graphdef, algorithm=algorithm_name,
+      stats_pb = statistics.evaluate(G,
+                                     CLs,
+                                     graphdef,
+                                     algorithm=algorithm_name,
                                      cl_identifier=FLAGS.cl_identifier)
       _write_statistics_to_disk(FLAGS.output_dir,
                                 stats_pb,
@@ -102,6 +126,9 @@ def main(argv):
 
     if FLAGS.dot:
       print(_make_dot_from_graph(G))
+
+    if FLAGS.git:
+      print(_make_git_from_cls(CLs, graphdef))
 
 
 if __name__ == '__main__':
