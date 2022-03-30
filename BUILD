@@ -42,3 +42,10 @@ py_test(
   deps = [":splitbrain"],
   data = [":testdata"]
 )
+
+py_test(
+  name = "graphdef_utils_test",
+  srcs = ["graphdef_utils_test.py"],
+  deps = [":splitbrain"],
+  data = [":testdata"]
+)
