@@ -8,6 +8,7 @@ Usage:
 """
 
 import os
+from re import A
 import networkx as nx
 import program_graph_pb2
 import splitbrain
@@ -30,21 +31,15 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string('input_path', None, 'Path to input GraphDef.')
 flags.mark_flag_as_required('input_path')
-flags.DEFINE_bool('enable_statistics', False,
-                  'If true, capture statistics for this session.')
-flags.DEFINE_bool('textproto', False,
-                  'If true, writes output statistics as textproto format.')
-flags.DEFINE_string(
-    'output_dir', None,
-    'Directory to write output artefacts (e.g. statistics pb) to.')
-flags.DEFINE_string(
-    'cl_identifier', 'unknown',
-    'Unique identifier for the source changelist in statistics.')
-flags.DEFINE_bool(
-    'dot', False,
-    'If true, output the changeset as a DOT visualisation to stdout.')
-flags.DEFINE_bool('git', False,
-                  'If true, output the changeset as a stream of git commands.')
+flags.DEFINE_bool('enable_statistics', False, 'Captures data for this session.')
+flags.DEFINE_bool('textproto', False, 'Writes output data as textproto format.')
+flags.DEFINE_string('output_dir', None,
+                    'Directory to write output (e.g. statistics).')
+flags.DEFINE_string('cl_identifier', 'unknown', 'UID for source CL in stats.')
+flags.DEFINE_bool('dot', False, 'Outputs CLs as a DOT visualisation.')
+flags.DEFINE_bool('quiet', False,
+                  'Suppress textual output. Note: Pair with --git and exec.')
+flags.DEFINE_bool('git', False, 'Outputs CLs as a stream of git commands.')
 flags.DEFINE_multi_enum(
     'algorithms', ['SplitbrainV2'], VALID_ALGORITHMS.keys(),
     'Multi string list of algorithms to run, e.g. SplitbrainV2.')
@@ -74,19 +69,18 @@ def _make_git_from_cls(CLs: list, graphdef: program_graph_pb2.GraphDef) -> str:
   # TODO(cameron): Ensure cannot build if doesn't fit constraints.
   # TODO(cameron): Move to another file, add tests.
 
-  out = "git rebase -i <oldsha1>\n" # TODO(cameron): Pass in via CLI.
+  out = "git rebase -i <oldsha1>\n"  # TODO(cameron): Pass in via CLI.
   out += "git reset HEAD^\n"
   for CL in CLs:
     for symbol in CL:
       del symbol
-      filepath = "path/to/file" # TODO(cameron): Grab from symbol table.
+      filepath = "path/to/file"  # TODO(cameron): Grab from symbol table.
       out += f"git add {filepath}\n"
-    commit_message = "SplitBrain Commit!!!" # TODO(cameron): Generate description.
+    commit_message = "SplitBrain Commit!!!"  # TODO(cameron): Generate description.
     out += f"git commit -m {commit_message}\n"
 
   out += "git rebase --continue"
   return out
-  
 
 
 def main(argv):
