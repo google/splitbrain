@@ -100,5 +100,5 @@ class SplitbrainV2(SplitbrainAlgorithm):
       if self.cost(CL) >= SplitbrainV2.COST_THRESHOLD:
         CLs.append(CL)
         CL = []
-      
+
     return CLs
