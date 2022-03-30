@@ -38,7 +38,7 @@ flags.DEFINE_string('output_dir', None,
 flags.DEFINE_string('cl_identifier', 'unknown', 'UID for source CL in stats.')
 flags.DEFINE_bool('dot', False, 'Outputs CLs as a DOT visualisation.')
 flags.DEFINE_bool('quiet', False,
-                  'Suppress textual output. Note: Pair with --git and exec.')
+                  'Suppress textual output. Note: Pair with --git or --dot.')
 flags.DEFINE_bool('git', False, 'Outputs CLs as a stream of git commands.')
 flags.DEFINE_multi_enum(
     'algorithms', ['SplitbrainV2'], VALID_ALGORITHMS.keys(),
@@ -91,23 +91,25 @@ def main(argv):
   graphdef = graphdef_utils.load_graphdef_from_file(FLAGS.input_path)
 
   G = graphdef_utils.make_graph_from_proto(graphdef)
-  print("Loaded graphdef into memory: %s" % G)
+  if not FLAGS.quiet:
+    print("Loaded graphdef into memory: %s" % G)
 
   for algorithm_name in FLAGS.algorithms:
-    print("\nRunning algorithm: %s" % algorithm_name)
     algorithm = VALID_ALGORITHMS[algorithm_name]()
-
     if not algorithm.is_valid(graphdef):
       continue
 
     CLs = algorithm.run(G)
-    for changelist in CLs:
-      print('Changelist: ' + str(changelist))
+    if not FLAGS.quiet:
+      print("Executed algorithm: %s\nChangelists:" % algorithm_name)
+      for changelist in CLs:
+        print('---> CL: ' + str(changelist))
 
     if FLAGS.enable_statistics:
       if FLAGS.output_dir is None:
         raise Exception("output_dir cannot be empty if --enable_statistics.")
-      print('Writing statistics to disk.')
+      if not FLAGS.quiet:
+        print('Writing statistics to disk.')
       stats_pb = statistics.evaluate(G,
                                      CLs,
                                      graphdef,
@@ -120,7 +122,6 @@ def main(argv):
 
     if FLAGS.dot:
       print(_make_dot_from_graph(G))
-
     if FLAGS.git:
       print(_make_git_from_cls(CLs, graphdef))
 
