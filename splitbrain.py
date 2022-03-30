@@ -14,6 +14,7 @@ See main.py for running the algorithm against input data.
 """
 
 import networkx as nx
+from pyparsing import empty
 import program_graph_pb2
 
 
@@ -74,11 +75,30 @@ class SplitbrainV2(SplitbrainAlgorithm):
   Throws:
     NetworkXError or NetworkXUnfeasible if the graph is undirected or is not a
     complete directed acyclic graph.
-  
-  TODO(cameron): Add clustering.
   """
+
+  COST_THRESHOLD = 2
+
+  def cost(self, CL_symbols: list) -> float:
+    """Cost function for evaluating a CL.
+    
+    Args:
+      CL_symbols: List of symbols within a CL.
+    Returns:
+      Cost value."""
+    # TODO(cameron): Add a better cost fn.
+    return len(CL_symbols)
 
   def run(self, G: nx.Graph) -> list:
     assert nx.is_directed_acyclic_graph(G)
-    CLs = list(reversed(list(nx.topological_sort(G))))
+
+    # TODO(cameron): Apply DP approach instead of greedy algorithm.
+    CLs = []
+    CL = []
+    for symbol in list(reversed(list(nx.topological_sort(G)))):
+      CL.append(symbol)
+      if self.cost(CL) >= SplitbrainV2.COST_THRESHOLD:
+        CLs.append(CL)
+        CL = []
+      
     return CLs

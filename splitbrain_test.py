@@ -20,7 +20,7 @@ class SplitbrainTest(absltest.TestCase):
     G = graphdef_utils.make_graph_from_proto(graphdef)
     algorithm = splitbrain.SplitbrainV2()
     CLs = algorithm.run(G)
-    self.assertEqual(CLs, ['fib', 'my_error', 'do_fib'])
+    self.assertEqual(CLs, [['fib'], ['my_error'], ['do_fib']])
 
     stats_pb = statistics.evaluate(G, CLs, graphdef)
     self.assertLen(stats_pb.split_changelist, len(CLs))
