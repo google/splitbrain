@@ -96,9 +96,13 @@ class SplitbrainV2(SplitbrainAlgorithm):
     CLs = []
     CL = []
     for symbol in list(reversed(list(nx.topological_sort(G)))):
+      print(symbol)
       CL.append(symbol)
       if self.cost(CL) >= SplitbrainV2.COST_THRESHOLD:
         CLs.append(CL)
         CL = []
+    
+    if len(CL) > 0:
+      CLs.append(CL)
 
     return CLs
