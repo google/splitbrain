@@ -1,0 +1,6 @@
+[submodule "kythe"]
+	path = third_party/kythe 
+	url = https://github.com/kythe/kythe
+[submodule "bazel"]
+	path = third_party/bazel
+	url = https://github.com/bazelbuild/bazel
