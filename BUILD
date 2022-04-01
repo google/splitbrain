@@ -20,6 +20,12 @@ py_library(
 )
 
 py_binary(
+  name = "graphdef_from_bazel",
+  srcs = ["graphdef_from_bazel.py"],
+  deps = [":splitbrain"],
+)
+
+py_binary(
   name = "main",
   srcs = ["main.py"],
   deps = [":splitbrain"],
