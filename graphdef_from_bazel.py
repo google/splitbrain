@@ -11,6 +11,7 @@ Usage:
 from absl import app
 from absl import flags
 import graphdef_utils
+from third_party.bazel.src.main.protobuf import build_pb2 
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string('input_path', None, 'Path to Bazel WORKSPACE file.')
@@ -25,6 +26,17 @@ flags.mark_flag_as_required('output_dir')
 
 def main(argv):
   del argv
+
+  with open(FLAGS.input_path) as f:
+    pass
+
+  # TODO(cameron): Load bazel proto using vendored dependency.
+  # TODO(cameron): Filter on predicates: Must be a working change in the CL? Maybe keep transitive.
+  # TODO(cameron): Find testdata based stuff and make changes bi-directional. Same with proto.
+  # TODO(cameron): Merge bi-directional dependencies.
+  # TODO(cameron): Import tests from internal.
+  # TODO(cameron): Assert the graph is a DAG. Find and merge cycles.
+  graphdef = program_graph_pb2.GraphDef()
 
 
 if __name__ == '__main__':
