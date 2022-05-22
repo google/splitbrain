@@ -1,7 +1,8 @@
 from re import X
 from absl.testing import absltest
-import splitbrain
-import statistics
+from splitbrain import SplitbrainV2
+from splitbrain import SplitbrainV1
+from splitbrain import statistics
 import graphdef_utils
 import program_graph_pb2
 
@@ -18,7 +19,7 @@ class SplitbrainTest(absltest.TestCase):
     graphdef = graphdef_utils.load_graphdef_from_file(
         "testdata/example_graph.textproto")
     G = graphdef_utils.make_graph_from_proto(graphdef)
-    algorithm = splitbrain.SplitbrainV2()
+    algorithm = SplitbrainV2()
     CLs = algorithm.run(G)
     self.assertEqual(CLs, [['fib', 'my_error'], ['do_fib']])
 
@@ -52,7 +53,7 @@ class SplitbrainTest(absltest.TestCase):
     nodedef.kind = program_graph_pb2.NodeDef.Kind.SYMBOL
     graphdef = program_graph_pb2.GraphDef()
     graphdef.symbol.append(nodedef)
-    self.assertFalse(splitbrain.SplitbrainV1().is_valid(graphdef))
+    self.assertFalse(SplitbrainV1().is_valid(graphdef))
 
 
 if __name__ == '__main__':
