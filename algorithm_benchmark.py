@@ -1,6 +1,6 @@
 import networkx as nx
 import google_benchmark as benchmark
-import splitbrain
+from splitbrain import SplitbrainV2
 
 
 @benchmark.register
@@ -13,7 +13,7 @@ def benchmark_fib(state):
   G.add_edge("do_fib", "fib")
   G.remove_edges_from(nx.selfloop_edges(G))
 
-  algorithm = splitbrain.SplitbrainV2()
+  algorithm = SplitbrainV2()
 
   while state:
     algorithm.run(G)
