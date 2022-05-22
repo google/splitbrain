@@ -1,6 +1,7 @@
 from re import X
 from absl.testing import absltest
 from splitbrain import SplitbrainV2
+from splitbrain import SplitbrainV1
 from splitbrain import statistics
 import graphdef_utils
 import program_graph_pb2
@@ -52,7 +53,7 @@ class SplitbrainTest(absltest.TestCase):
     nodedef.kind = program_graph_pb2.NodeDef.Kind.SYMBOL
     graphdef = program_graph_pb2.GraphDef()
     graphdef.symbol.append(nodedef)
-    self.assertFalse(splitbrain.SplitbrainV1().is_valid(graphdef))
+    self.assertFalse(SplitbrainV1().is_valid(graphdef))
 
 
 if __name__ == '__main__':

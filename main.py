@@ -92,7 +92,7 @@ def main(argv):
       if FLAGS.output_dir is None:
         raise Exception("output_dir cannot be empty if --enable_statistics.")
       print('Writing statistics to disk.')
-      stats_pb = splitbrainn.evaluate(G, CLs, graphdef, algorithm=algorithm_name,
+      stats_pb = splitbrain.evaluate(G, CLs, graphdef, algorithm=algorithm_name,
                                       cl_identifier=FLAGS.cl_identifier)
       _write_statistics_to_disk(FLAGS.output_dir,
                                 stats_pb,
