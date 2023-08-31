@@ -39,6 +39,19 @@ message NodeDef {
   // ignore that and take the majority language.
   // This can either be populated by Kythe or extracted from file extension.
   string language = 7;
+
+  message FileRef {
+    // Arbitrary filepath to file.
+    string file_path = 1;
+    // The start line of the symbol, inclusive.
+    int32 line_bound_start = 2;
+    // The end line of the symbol, exclusive.
+    int32 line_bound_end = 3;
+  }
+
+  // Links this symbol to relevant file references. The intention is to allow 
+  // generation of a whole diff after computation.
+  repeated FileRef file_ref = 8;
 }
 
 // GraphDef represents a high-level program graph.
